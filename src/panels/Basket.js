@@ -8,10 +8,10 @@ import edit from '../img/edit.svg';
 import './place.css';
 
 
-const Basket = ({ match: { params: { areaId, itemId }}, foodAreas, order }) => {
-  const [ faster, setFaster ] = useState(true);
-  const [ time, setTime ] = useState('');
-  const [ selfService, setSelfService ] = useState(false);
+const Basket = ({ match: { params: { areaId, itemId }}, foodAreas, order, getOrderDetail, setOrderDetail }) => {
+  const [ faster, setFaster ] = useState(getOrderDetail(itemId, 'faster'));
+  const [ time, setTime ] = useState(getOrderDetail(itemId, 'time'));
+  const [ selfService, setSelfService ] = useState(getOrderDetail(itemId, 'selfService'));
   const area = foodAreas.filter(area => area.id === areaId)[0];
   const item = area.items.filter(item => item.id === itemId)[0];
 
@@ -112,9 +112,12 @@ const Basket = ({ match: { params: { areaId, itemId }}, foodAreas, order }) => {
             onToggle={() => {
               if (faster) {
                 setFaster(false);
+                setOrderDetail(itemId, 'faster', false);
               } else {
                 setTime('');
+                setOrderDetail(itemId, 'time', '');
                 setFaster(true);
+                setOrderDetail(itemId, 'faster', true);
               }
             }}
           />
@@ -126,25 +129,37 @@ const Basket = ({ match: { params: { areaId, itemId }}, foodAreas, order }) => {
             type="time"
             onFocus={() => {
               setFaster(false);
+              setOrderDetail(itemId, 'faster', false);
             }}
             onChange={event => {
               setFaster(false);
+              setOrderDetail(itemId, 'faster', false);
               setTime(event.target.value);
+              setOrderDetail(itemId, 'time', event.target.value);
             }}
             onBlur={() => {
               if (time) {
                 setFaster(false);
+                setOrderDetail(itemId, 'faster', false);
               }
             }}
           />
         </div>
         <div className="Place__choice-item">
           <h3>С собой</h3>
-          <Checkbox checked={selfService} onToggle={() => setSelfService(!selfService)} />
+          <Checkbox checked={selfService} onToggle={() => {
+              setSelfService(!selfService);
+              setOrderDetail(itemId, 'selfService', !selfService);
+            }}
+          />
         </div>
         <div className="Place__choice-item">
           <h3>На месте</h3>
-          <Checkbox checked={!selfService} onToggle={() => setSelfService(!setSelfService)} />
+          <Checkbox checked={!selfService} onToggle={() => {
+              setSelfService(!setSelfService);
+              setOrderDetail(itemId, 'selfService', !selfService);
+            }}
+          />
         </div>
       </div>
       <footer className="Place__footer">
